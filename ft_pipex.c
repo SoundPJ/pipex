@@ -6,14 +6,15 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 14:43:37 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/07 10:38:52 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/07 18:44:09 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_pipex.h"
 char	**ft_findpath(char *env[]);
+int	ft_runcmd(char *cmd, char *env[]);
 
-int	main(int argv, char *argc[], char *env[])
+int	main(int argc, char *argv[], char *env[])
 {
 	// int fd[2];
 	// int	pid;
@@ -42,31 +43,10 @@ int	main(int argv, char *argc[], char *env[])
 	// 		exit(0);
 	// 	}
 	// }
-	
-	char	**paths = ft_findpath(env);
-	int	i = 0;
-
-	// char *cmd = "/bin/cat";
-	char *cmd = "cat";
-	char *binPath;
-	char *arg[] = {cmd, "test", NULL};
-	char envp[] = {0};
-	// while(paths[i] != NULL)
-	// {
-	// 	binPath = ft_strjoin(paths[i],cmd);
-	// 	if (access(binPath, W_OK))
-	// 		if (execve(binPath, arg, env) == -1)
-	// 			printf("error");
-	// 	else
-	// 		i++;
-	// }
-
-	if (access("/trash/cat", X_OK) == 0)
-		printf("OK\n");
+	if(argc < 2)
+		printf("Input needed!!\n");
 	else
-		printf("NOOO\n");
-	// 	ft_putendl_fd(path[i++], 1);
-			
+		ft_runcmd(argv[1], env);
 	return (0);
 }
 
@@ -84,4 +64,29 @@ char	**ft_findpath(char *env[])
 			i++;
 	}
 	return (NULL);
+}
+
+
+int	ft_runcmd(char *cmd, char *env[])
+{
+	char	**paths;
+	char	*binPath;
+	char	**cd;
+	int		i;
+
+	paths = ft_findpath(env);
+	cd = ft_split(cmd, ' ');
+	i = 0;
+	while(paths[i] != NULL)
+	{
+		binPath = ft_strjoin(paths[i],ft_strjoin("/", cd[0]));
+		if (access(binPath, X_OK) == 0)
+		{
+			if (execve(binPath, cd, env) == -1)
+				printf("error");
+		}
+		else
+			i++;
+	}
+	return (0);
 }
