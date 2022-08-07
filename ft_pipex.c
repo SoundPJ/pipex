@@ -6,53 +6,55 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 14:43:37 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/07 18:44:09 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/07 19:45:15 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_pipex.h"
 char	**ft_findpath(char *env[]);
-int	ft_runcmd(char *cmd, char *env[]);
+int		ft_runcmd(char *cmd, char *env[]);
 
 int	main(int argc, char *argv[], char *env[])
 {
-	// int fd[2];
-	// int	pid;
+	char	buf;
+	int		fd[2];
+	int		pid;
 
-	// pipe(fd);
-	// pid = fork();
-	// if (pid == -1)
-	// {
-	// 	return 1;
-	// }
-	// else
-	// {
-	// 	if (pid != 0)// parent process
-	// 	{
-	// 		wait(NULL);
-	// 		char buf;
-			
-	// 		read(fd[0], &buf, 1); 
-	// 		write(1, &buf , 1);
-	// 		write(1, "b", 1);
-	// 	}
-	// 	else // child process
-	// 	{
-	// 		dup2(fd[1], 1);
-	// 		write(1, "a", 1);
-	// 		exit(0);
-	// 	}
-	// }
-	if(argc < 2)
-		printf("Input needed!!\n");
+	if(argc < 5)
+		perror("The program should be used like this \"./pipex infile cmd1 cmd2 ... outfile\"");
 	else
-		ft_runcmd(argv[1], env);
+	{
+		if (pipe(fd) == -1)
+			perror("Error at pipe");
+		pid = fork();
+		if (pid == -1)
+			perror("Error at fork");
+		else
+		{
+			if (pid == 0)// child process
+			{
+				dup2(fd[1], 1);
+				ft_runcmd(argv[2], env);
+				write(1, "a", 1);
+				exit(0);
+			}
+			else // parent process
+			{
+				wait(NULL);
+				read(fd[0], &buf, 1); 
+				write(1, &buf , 1);
+				write(1, "b", 1);
+			}
+		}
+	}
 	return (0);
 }
 
 char	**ft_findpath(char *env[])
 {
-	int 	i = 0;
+	int	i;
+
+	i = 0;
 	while (env[i] != NULL)
 	{
 		if (ft_strnstr(env[i], "PATH=", 5))
@@ -66,23 +68,22 @@ char	**ft_findpath(char *env[])
 	return (NULL);
 }
 
-
 int	ft_runcmd(char *cmd, char *env[])
 {
 	char	**paths;
-	char	*binPath;
+	char	*bin_path;
 	char	**cd;
 	int		i;
 
 	paths = ft_findpath(env);
 	cd = ft_split(cmd, ' ');
 	i = 0;
-	while(paths[i] != NULL)
+	while (paths[i] != NULL)
 	{
-		binPath = ft_strjoin(paths[i],ft_strjoin("/", cd[0]));
-		if (access(binPath, X_OK) == 0)
+		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cd[0]));
+		if (access(bin_path, X_OK) == 0)
 		{
-			if (execve(binPath, cd, env) == -1)
+			if (execve(bin_path, cd, env) == -1)
 				printf("error");
 		}
 		else
