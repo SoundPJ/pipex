@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 14:43:37 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/07 19:45:15 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/09 00:44:36 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,29 +24,34 @@ int	main(int argc, char *argv[], char *env[])
 		perror("The program should be used like this \"./pipex infile cmd1 cmd2 ... outfile\"");
 	else
 	{
+	}
 		if (pipe(fd) == -1)
+		{
 			perror("Error at pipe");
+			exit(1);
+		}
 		pid = fork();
 		if (pid == -1)
+		{
 			perror("Error at fork");
+			exit(1);
+		}
 		else
 		{
 			if (pid == 0)// child process
 			{
 				dup2(fd[1], 1);
 				ft_runcmd(argv[2], env);
-				write(1, "a", 1);
-				exit(0);
 			}
 			else // parent process
 			{
 				wait(NULL);
-				read(fd[0], &buf, 1); 
-				write(1, &buf , 1);
-				write(1, "b", 1);
+				// read(fd[0], &buf, 1);
+				ft_runcmd(ft_strjoin(argv[3], argv[1]), env);
+				// write(1, &buf , 1);
+				// write(1, "b", 1);
 			}
 		}
-	}
 	return (0);
 }
 
@@ -76,6 +81,8 @@ int	ft_runcmd(char *cmd, char *env[])
 	int		i;
 
 	paths = ft_findpath(env);
+	if (paths == NULL)
+		exit(1);
 	cd = ft_split(cmd, ' ');
 	i = 0;
 	while (paths[i] != NULL)
@@ -84,7 +91,7 @@ int	ft_runcmd(char *cmd, char *env[])
 		if (access(bin_path, X_OK) == 0)
 		{
 			if (execve(bin_path, cd, env) == -1)
-				printf("error");
+				exit(1);
 		}
 		else
 			i++;
