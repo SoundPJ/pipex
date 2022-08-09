@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 14:43:37 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/09 00:44:36 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/09 10:46:04 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,19 @@ int	main(int argc, char *argv[], char *env[])
 		{
 			if (pid == 0)// child process
 			{
+				close(fd[0]);
 				dup2(fd[1], 1);
 				ft_runcmd(argv[2], env);
+				close(fd[1]);
 			}
 			else // parent process
 			{
 				wait(NULL);
-				// read(fd[0], &buf, 1);
-				ft_runcmd(ft_strjoin(argv[3], argv[1]), env);
-				// write(1, &buf , 1);
-				// write(1, "b", 1);
+				close(fd[1]);
+				read(fd[0], &buf, 100);
+				write(1, &buf, 100);
+				close(fd[0]);
+				// ft_runcmd(ft_strjoin(argv[3], argv[1]), env);
 			}
 		}
 	return (0);
