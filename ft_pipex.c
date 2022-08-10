@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 14:43:37 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/11 04:48:58 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/11 05:09:36 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,22 +23,21 @@ int	main(int argc, char **argv, char **env)
 	int		pid;
 
 	infile_fd = open(argv[1], O_RDONLY);
-	printf("%s\n", argv[argc - 1]);
-	outfile_fd = open(argv[argc - 1], O_RDWR | O_CREAT);
-	write(outfile_fd, "HELLO", 6);
-	// pipe(fd);
-	// pid = fork();
-	// if (pid == 0) //child process
-	// {
-	// 	close(fd[0]);
-	// 	ft_runcmd(argv[2], env, infile_fd, fd[1]);
-	// }
-	// else
-	// {
-	// 	close(fd[1]);
-	// 	wait(NULL);
-	// 	ft_runcmd(argv[3], env, fd[0], outfile_fd);
-	// }
+	outfile_fd = open(argv[argc - 1], O_WRONLY | O_CREAT, 0775);
+	pipe(fd);
+	pid = fork();
+	if (pid == 0) //child process
+	{
+		close(fd[0]);
+		ft_runcmd(argv[2], env, infile_fd, fd[1]);
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+		ft_runcmd(argv[3], env, fd[0], outfile_fd);
+	}
+	close(outfile_fd);
 	//////////////////////
 	// if(argc < 5)
 	// 	perror("The program should be used like this \"./pipex infile cmd1 cmd2 ... outfile\"");
