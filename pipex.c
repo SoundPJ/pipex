@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/14 23:23:35 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/15 00:02:29 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(int argc, char **argv, char **env)
 	int		infile_fd;
 	int		outfile_fd;
 	int		pid;
+	int		ncmd = 2;
 
 	if (argc < 5)
 	{
@@ -53,7 +54,7 @@ int	main(int argc, char **argv, char **env)
 			close(fd[1]);
 			close(infile_fd);
 			wait(NULL);
-			ft_runcmd(argv[3], env, fd[0], 1);
+			ft_runcmd(argv[argc - 2], env, fd[0], 1);
 		}
 		return (0);
 	}
