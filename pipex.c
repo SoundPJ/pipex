@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/18 03:31:42 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/18 03:40:13 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ void	first_cmd(int argc, char **argv, char **env, int i)
 	int	fd[2];
 	int	pid;
 
-	pipe(fd);
+	if (pipe(fd) != 0)
+		exit(EXIT_FAILURE);
 	pid = fork();
 	if (pid == 0)
 	{
