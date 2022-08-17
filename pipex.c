@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/18 03:03:53 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/18 03:31:42 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,80 +14,68 @@
 
 char	**ft_findpath(char **env);
 void	ft_runcmd(char *cmd, char **env);
-int		ft_open_infile(char *infile);
-void		first_cmd(int argc, char **argv, char **env, int i);
+void	first_cmd(int argc, char **argv, char **env, int i);
+int		ft_open_file(char *filename, int mode);
 
 int	main(int argc, char **argv, char **env)
 {
-	// int	ncmd = 1;
-	// int	tmp_fd;
-	// char	buf;
-	// int	piped_fd[2];
-	// pipe(piped_fd);
-	// int	pid = fork();
-	// if (pid == 0)
-	// {
-	// 	write(piped_fd[1], 'a', 1);
-	// 	close(piped_fd[0]);
-	// 	close(piped_fd[1]);
-	// }
-	// else
-	// {
-	// 	wait(NULL);
-	// 	close(piped_fd[1]);
-	// 	read(piped_fd[0], &buf, 1);
-	// 	printf("%c\n", buf);
-	// }
-	// (void)argc;
-
-	first_cmd(argc, argv, env, 2);
-
+	if (argc < 5)
+	{
+		write(1, "Not enough arguments\n", 22);
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		dup2(ft_open_file(argv[1], INFILE), 0);
+		first_cmd(argc, argv, env, 2);
+	}
 	return (0);
 }
 
 void	first_cmd(int argc, char **argv, char **env, int i)
 {
 	int	fd[2];
-	pipe(fd);
-	int	pid = fork();
+	int	pid;
 
+	pipe(fd);
+	pid = fork();
 	if (pid == 0)
 	{
-		if (i == 2)
-			dup2(open(argv[1], O_RDONLY), 0);
 		dup2(fd[1], 1);
 		close(fd[0]);
-		close(fd[1]);
 		ft_runcmd(argv[i], env);
 	}
 	else
 	{
 		wait(NULL);
 		close(fd[1]);
-		i++;
 		dup2(fd[0], 0);
-		close(fd[0]);
-		if (i < argc - 2)
+		if (++i < argc - 2)
 			first_cmd(argc, argv, env, i);
 		else
 		{
-			dup2(open(argv[argc - 1], O_WRONLY | O_CREAT, 0775), 1);
+			dup2(ft_open_file(argv[argc - 1], OUTFILE), 1);
 			ft_runcmd(argv[i], env);
 		}
 	}
 }
 
-int	ft_open_infile(char *infile)
+int	ft_open_file(char *filename, int mode)
 {
-	int	infile_fd;
+	int	file_fd;
 
-	infile_fd = open(infile, O_RDONLY);
-	if (infile_fd < 0)
+	if (mode == INFILE)
 	{
-		perror("Input file does not exist");
-		exit(EXIT_FAILURE);
+		file_fd = open(filename, O_RDONLY);
+		if (file_fd < 0)
+		{
+			perror("Input file does not exist");
+			exit(EXIT_FAILURE);
+		}
+		return (file_fd);
 	}
-	return (infile_fd);
+	else
+		return (open(filename, O_WRONLY | O_CREAT, 0775));
 }
 
 char	**ft_findpath(char **env)
