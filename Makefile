@@ -6,13 +6,14 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/15 23:11:53 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/18 04:23:49 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 
-SRCS =	pipex.c
+SRCS =	pipex.c\
+		utils.c
 
 CFLAGS = -Wall -Werror -Wextra
 
