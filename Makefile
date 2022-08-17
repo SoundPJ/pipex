@@ -6,28 +6,27 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/09 00:16:29 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/15 23:11:53 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = pipex.a
+NAME = pipex
 
-SRCS =	ft_pipex.c
+SRCS =	pipex.c
 
 CFLAGS = -Wall -Werror -Wextra
 
-INC_DIR = .libft/
+INC_DIR = ./libft/
 
-OBJS = $(SRCS:%.c=%.o)
+LIBFT_DIR = ./libft/
 
-$(NAME): $(OBJS)
-	@gcc -c $(CFLAGS) -I $(INC_DIR) -lft $(SRCS)
-	@ar -rcs $(NAME) $(OBJS)
+$(NAME):
+	@gcc $(CFLAGS) -I$(INC_DIR) -L$(LIBFT_DIR) $(SRCS) -lft -o $(NAME)
+
+all: $(NAME)
 
 clean:
 	@rm -f *.o
-
-all: $(NAME)
 
 fclean: clean
 	@rm -f $(NAME)

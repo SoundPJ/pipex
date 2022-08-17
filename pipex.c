@@ -6,57 +6,74 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/15 00:02:29 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/18 03:03:53 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 char	**ft_findpath(char **env);
-void	ft_runcmd(char *cmd, char **env, int infd, int outfd);
+void	ft_runcmd(char *cmd, char **env);
 int		ft_open_infile(char *infile);
+void		first_cmd(int argc, char **argv, char **env, int i);
 
 int	main(int argc, char **argv, char **env)
 {
-	int		fd[2];
-	int		infile_fd;
-	int		outfile_fd;
-	int		pid;
-	int		ncmd = 2;
+	// int	ncmd = 1;
+	// int	tmp_fd;
+	// char	buf;
+	// int	piped_fd[2];
+	// pipe(piped_fd);
+	// int	pid = fork();
+	// if (pid == 0)
+	// {
+	// 	write(piped_fd[1], 'a', 1);
+	// 	close(piped_fd[0]);
+	// 	close(piped_fd[1]);
+	// }
+	// else
+	// {
+	// 	wait(NULL);
+	// 	close(piped_fd[1]);
+	// 	read(piped_fd[0], &buf, 1);
+	// 	printf("%c\n", buf);
+	// }
+	// (void)argc;
 
-	if (argc < 5)
+	first_cmd(argc, argv, env, 2);
+
+	return (0);
+}
+
+void	first_cmd(int argc, char **argv, char **env, int i)
+{
+	int	fd[2];
+	pipe(fd);
+	int	pid = fork();
+
+	if (pid == 0)
 	{
-		write(2, "Wrong Usage: ./pipex <infile> <cmd1> <cmd2> ... <outfile>\n", 58);
-		exit(EXIT_FAILURE);
+		if (i == 2)
+			dup2(open(argv[1], O_RDONLY), 0);
+		dup2(fd[1], 1);
+		close(fd[0]);
+		close(fd[1]);
+		ft_runcmd(argv[i], env);
 	}
 	else
 	{
-		infile_fd = ft_open_infile(argv[1]);
-		outfile_fd = open(argv[argc - 1], O_WRONLY | O_CREAT, 0775);
-		if (pipe(fd) < 0)
-		{
-			perror("Error at pipe");
-			exit(EXIT_FAILURE);
-		}
-		pid = fork();
-		if (pid < 0)
-		{
-			perror("Error at fork");
-			exit(EXIT_FAILURE);
-		}
-		else if (pid == 0)
-		{
-			close(fd[0]);
-			ft_runcmd(argv[2], env, infile_fd, fd[1]);
-		}
+		wait(NULL);
+		close(fd[1]);
+		i++;
+		dup2(fd[0], 0);
+		close(fd[0]);
+		if (i < argc - 2)
+			first_cmd(argc, argv, env, i);
 		else
 		{
-			close(fd[1]);
-			close(infile_fd);
-			wait(NULL);
-			ft_runcmd(argv[argc - 2], env, fd[0], 1);
+			dup2(open(argv[argc - 1], O_WRONLY | O_CREAT, 0775), 1);
+			ft_runcmd(argv[i], env);
 		}
-		return (0);
 	}
 }
 
@@ -73,7 +90,7 @@ int	ft_open_infile(char *infile)
 	return (infile_fd);
 }
 
-char	**ft_findpath(char *env[])
+char	**ft_findpath(char **env)
 {
 	int	i;
 
@@ -92,11 +109,11 @@ char	**ft_findpath(char *env[])
 	exit (EXIT_FAILURE);
 }
 
-void	ft_runcmd(char *cmd, char *env[], int infd, int outfd)
+void	ft_runcmd(char *cmd, char **env)
 {
 	char	**paths;
-	char	*bin_path;
 	char	**cd;
+	char	*bin_path;
 	int		i;
 
 	paths = ft_findpath(env);
@@ -105,10 +122,8 @@ void	ft_runcmd(char *cmd, char *env[], int infd, int outfd)
 	while (paths[i] != NULL)
 	{
 		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cd[0]));
-		if (access(bin_path, X_OK) == 0)
+		if (access(bin_path, X_OK | R_OK | F_OK) == 0)
 		{
-			dup2(infd, 0);
-			dup2(outfd, 1);
 			if (execve(bin_path, cd, env) == -1)
 				exit(1);
 		}
