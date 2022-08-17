@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/18 03:40:13 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/18 03:41:31 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	**ft_findpath(char **env);
 void	ft_runcmd(char *cmd, char **env);
-void	first_cmd(int argc, char **argv, char **env, int i);
+void	ft_pipex(int argc, char **argv, char **env, int i);
 int		ft_open_file(char *filename, int mode);
 
 int	main(int argc, char **argv, char **env)
@@ -27,12 +27,12 @@ int	main(int argc, char **argv, char **env)
 	else
 	{
 		dup2(ft_open_file(argv[1], INFILE), 0);
-		first_cmd(argc, argv, env, 2);
+		ft_pipex(argc, argv, env, 2);
 	}
 	return (0);
 }
 
-void	first_cmd(int argc, char **argv, char **env, int i)
+void	ft_pipex(int argc, char **argv, char **env, int i)
 {
 	int	fd[2];
 	int	pid;
@@ -52,7 +52,7 @@ void	first_cmd(int argc, char **argv, char **env, int i)
 		close(fd[1]);
 		dup2(fd[0], 0);
 		if (++i < argc - 2)
-			first_cmd(argc, argv, env, i);
+			ft_pipex(argc, argv, env, i);
 		else
 		{
 			dup2(ft_open_file(argv[argc - 1], OUTFILE), 1);
