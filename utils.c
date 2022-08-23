@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 04:07:40 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/18 04:28:06 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/23 22:35:56 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ char	**ft_findpath(char **env)
 			i++;
 	}
 	ft_err("Environment path not found");
+	return (NULL);
 }
 
 void	ft_runcmd(char *cmd, char **env, int dupped_fd, int infd)

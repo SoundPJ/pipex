@@ -6,23 +6,27 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/18 04:23:49 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/23 22:32:22 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 
 SRCS =	pipex.c\
-		utils.c
+		utils.c\
+		./gnl/get_next_line.c\
+		./gnl/get_next_line_utils.c
 
 CFLAGS = -Wall -Werror -Wextra
 
-INC_DIR = ./libft/
+INC_DIR =	./libft/
 
 LIBFT_DIR = ./libft/
 
+GNL_DIR = ./gnl/
+
 $(NAME):
-	@gcc $(CFLAGS) -I$(INC_DIR) -L$(LIBFT_DIR) $(SRCS) -lft -o $(NAME)
+	@gcc $(CFLAGS) -I$(INC_DIR) -I$(GNL_DIR) -L$(LIBFT_DIR) $(SRCS) -lft -o $(NAME)
 
 all: $(NAME)
 

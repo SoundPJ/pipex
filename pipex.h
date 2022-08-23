@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:20 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/18 04:26:20 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/18 20:11:30 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include "libft.h"
+# include "get_next_line.h"
 
 char	**ft_findpath(char **env);
 void	ft_runcmd(char *cmd, char **env, int dupped_fd, int infd);
