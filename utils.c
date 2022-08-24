@@ -6,16 +6,21 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 04:07:40 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/25 04:30:05 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 04:58:13 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+char	*find_bin_path(char *cmd, char **paths);
+void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd);
+
 void	ft_pipex(int argc, char **argv, char **paths, int i)
 {
 	int	fd[2];
 	int	pid;
+	char	*bin_path;
+	char	**args;
 
 	if (pipe(fd) != 0)
 		ft_err("Error at pipe\n");
@@ -23,7 +28,12 @@ void	ft_pipex(int argc, char **argv, char **paths, int i)
 	if (pid < 0)
 		ft_err("Error at fork\n");
 	else if (pid == 0)
-		ft_runcmd(argv[i], paths, fd[1], 1);
+	{
+		args = ft_split(argv[i], ' ');
+		bin_path = find_bin_path(args[0], paths);
+		runcmd(bin_path, args, fd[1], 1);
+	}
+		// ft_runcmd(argv[i], paths, fd[1], 1);
 	else
 	{
 		wait(NULL);
@@ -32,7 +42,12 @@ void	ft_pipex(int argc, char **argv, char **paths, int i)
 		if (++i < argc - 2)
 			ft_pipex(argc, argv, paths, i);
 		else
-			ft_runcmd(argv[i], paths, ft_open_file(argv[argc - 1], OUTFILE), 1);
+		{
+			args = ft_split(argv[i], ' ');
+			bin_path = find_bin_path(args[0], paths);
+			runcmd(bin_path, args, ft_open_file(argv[argc - 1], OUTFILE), 1);
+		}
+			// ft_runcmd(argv[i], paths, ft_open_file(argv[argc - 1], OUTFILE), 1);
 	}
 }
 
@@ -71,29 +86,42 @@ char	**ft_findpath(char **env)
 	return (NULL);
 }
 
-void	ft_runcmd(char *cmd, char **paths, int dupped_fd, int infd)
+// void	ft_runcmd(char *cmd, char **paths, int dupped_fd, int infd)
+// {
+// 	char	**cd;
+// 	char	*bin_path;
+// 	int		i;
+
+// 	cd = ft_split(cmd, ' ');
+// 	i = 0;
+// 	while (paths[i] != NULL)
+// 	{
+// 		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cd[0]));
+// 		if (access(bin_path, X_OK | R_OK | F_OK) == 0)
+// 			runcmd(bin_path, cd, dupped_fd, infd);
+// 		else
+// 			i++;
+// 	}
+// 	ft_err("Command not found\n");
+// }
+
+char	*find_bin_path(char *cmd, char **paths)
 {
-	// char	**paths;
-	char	**cd;
+	// char	**cd;
 	char	*bin_path;
 	int		i;
 
-	// paths = ft_findpath(paths);
-	cd = ft_split(cmd, ' ');
 	i = 0;
 	while (paths[i] != NULL)
 	{
-		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cd[0]));
+		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cmd));
 		if (access(bin_path, X_OK | R_OK | F_OK) == 0)
-		{
-			dup2(dupped_fd, infd);
-			if (execve(bin_path, cd, NULL) == -1)
-				exit(1);
-		}
+			return (bin_path);
 		else
 			i++;
 	}
 	ft_err("Command not found\n");
+	return (NULL);
 }
 
 void	ft_err(char *err_msg)
@@ -102,3 +130,9 @@ void	ft_err(char *err_msg)
 	exit(EXIT_FAILURE);
 }
 
+void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd)
+{
+	dup2(dupped_fd, infd);
+	if (execve(bin_path, cd, NULL) == -1)
+		exit(1);
+}
