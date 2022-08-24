@@ -6,7 +6,7 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/25 00:05:31 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/25 00:21:03 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,7 +50,6 @@ clean:
 fclean: clean
 	make fclean -C $(LIBFT_DIR)
 	rm -f $(NAME)
-
 
 re: fclean all
 
