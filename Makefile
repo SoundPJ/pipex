@@ -6,7 +6,7 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/23 22:32:22 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/24 21:58:38 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,10 @@ SRCS =	pipex.c\
 		utils.c\
 		./gnl/get_next_line.c\
 		./gnl/get_next_line_utils.c
+
+INCS =	pipex.h\
+		./gnl/get_next_line.h\
+		./libft/libft.h
 
 CFLAGS = -Wall -Werror -Wextra
 
@@ -37,5 +41,9 @@ fclean: clean
 	@rm -f $(NAME)
 
 re: fclean all
+
+norm:
+	@norminette -R CheckForbiddenSourceHeader $(SRCS)
+	@norminette -R CheckDefine $(INCS)
 
 .PHONY: all clean fclean re

@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 04:07:40 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/23 22:35:56 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:03:40 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ void	ft_pipex(int argc, char **argv, char **env, int i)
 	int	pid;
 
 	if (pipe(fd) != 0)
-		ft_err("Error at pipe");
+		ft_err("Error at pipe\n");
 	pid = fork();
 	if (pid < 0)
-		ft_err("Error at fork");
+		ft_err("Error at fork\n");
 	else if (pid == 0)
 		ft_runcmd(argv[i], env, fd[1], 1);
 	else
@@ -44,7 +44,7 @@ int	ft_open_file(char *filename, int mode)
 	{
 		file_fd = open(filename, O_RDONLY);
 		if (file_fd < 0)
-			ft_err("Input file does not exist");
+			ft_err("Input file does not exist\n");
 		return (file_fd);
 	}
 	else
@@ -66,7 +66,7 @@ char	**ft_findpath(char **env)
 		else
 			i++;
 	}
-	ft_err("Environment path not found");
+	ft_err("Environment path not found\n");
 	return (NULL);
 }
 
@@ -92,11 +92,11 @@ void	ft_runcmd(char *cmd, char **env, int dupped_fd, int infd)
 		else
 			i++;
 	}
-	ft_err("Command not found");
+	ft_err("Command not found\n");
 }
 
 void	ft_err(char *err_msg)
 {
-	perror(err_msg);
+	ft_putstr_fd(err_msg, 2);
 	exit(EXIT_FAILURE);
 }
