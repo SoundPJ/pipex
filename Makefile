@@ -6,7 +6,7 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/25 00:21:03 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/25 03:56:49 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,10 +38,17 @@ $(OBJS): $(BUILD_DIR)/%.o: %.c
 	gcc -g $(CFLAGS) -I$(GNL_DIR) -I$(INC_DIR) -I$(LIBFT_DIR) -c $< -o $@
 
 $(NAME):$(OBJS)
-	make re -C $(LIBFT_DIR)	
+	make re -C $(LIBFT_DIR)
 	gcc $(CFLAGS) -I$(INC_DIR) -I$(GNL_DIR) -L$(LIBFT_DIR) $(OBJS) -lft -o $(NAME)
 
 all: $(NAME)
+
+cclean:
+	-rm -rf $(BUILD_DIR)
+	-rm -f $(NAME)
+
+restart: cclean $(OBJS)
+	gcc $(CFLAGS) -I$(INC_DIR) -I$(GNL_DIR) -L$(LIBFT_DIR) $(OBJS) -lft -o $(NAME)
 
 clean:
 	make clean -C $(LIBFT_DIR)
@@ -57,4 +64,4 @@ norm:
 	norminette -R CheckForbiddenSourceHeader $(SRCS)
 	norminette -R CheckDefine $(INCS)
 
-.PHONY: all clean fclean re norm
+.PHONY: all clean fclean re norm restart

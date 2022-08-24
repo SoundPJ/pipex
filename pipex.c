@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/24 22:03:27 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 04:17:16 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ char	*here_doc(char **av);
 int	main(int argc, char **argv, char **env)
 {
 	int	hd_fd[2];
+	char **paths;
 
+	paths = ft_findpath(env);
 	if (argc < 5)
 		ft_err("Not enough arguments\n");
 	else
@@ -30,12 +32,12 @@ int	main(int argc, char **argv, char **env)
 			dup2(hd_fd[0], 0);
 			close(hd_fd[0]);
 			close(hd_fd[1]);
-			ft_pipex(argc, argv, env, 3);
+			ft_pipex(argc, argv, paths, 3);
 		}
 		else
 		{
 			dup2(ft_open_file(argv[1], INFILE), 0);
-			ft_pipex(argc, argv, env, 2);
+			ft_pipex(argc, argv, paths, 2);
 		}
 	}
 	return (0);
