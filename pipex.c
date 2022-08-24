@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:28 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/25 04:17:16 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 05:03:21 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	main(int argc, char **argv, char **env)
 			ft_pipex(argc, argv, paths, 2);
 		}
 	}
+	ft_free(paths);
 	return (0);
 }
 
@@ -60,4 +61,14 @@ char	*here_doc(char **av)
 		line = get_next_line(0);
 	}
 	return (input_s);
+}
+
+void	ft_free(char **str)
+{
+	int	i;
+
+	i = 0;
+	while(str[i])
+		free(str[i]);
+	free(str);
 }
