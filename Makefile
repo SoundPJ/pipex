@@ -6,7 +6,7 @@
 #    By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/08 12:19:01 by pjerddee          #+#    #+#              #
-#    Updated: 2022/08/24 22:35:23 by pjerddee         ###   ########.fr        #
+#    Updated: 2022/08/24 22:41:07 by pjerddee         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ SRCS =	pipex.c\
 
 INCS =	pipex.h\
 		./gnl/get_next_line.h\
-		./libft/libft.h\
+		./libft/libft.h
 
 CFLAGS = -Wall -Werror -Wextra
 
