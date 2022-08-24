@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 20:01:20 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/25 04:41:18 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 05:08:34 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	ft_runcmd(char *cmd, char **env, int dupped_fd, int infd);
 void	ft_pipex(int argc, char **argv, char **env, int i);
 void	ft_err(char *err_msg);
 void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd);
+void	ft_free(char **str);
 int		ft_open_file(char *filename, int mode);
 
 #endif
