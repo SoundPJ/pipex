@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 04:07:40 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/25 04:58:13 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 06:57:39 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,13 @@ void	ft_pipex(int argc, char **argv, char **paths, int i)
 	{
 		args = ft_split(argv[i], ' ');
 		bin_path = find_bin_path(args[0], paths);
-		runcmd(bin_path, args, fd[1], 1);
+		if (bin_path)
+		{
+			runcmd(bin_path, args, fd[1], 1);
+			free(bin_path);
+		}
+		ft_free(args);
 	}
-		// ft_runcmd(argv[i], paths, fd[1], 1);
 	else
 	{
 		wait(NULL);
@@ -45,23 +49,28 @@ void	ft_pipex(int argc, char **argv, char **paths, int i)
 		{
 			args = ft_split(argv[i], ' ');
 			bin_path = find_bin_path(args[0], paths);
+			// free(bin_path);
+			if (!bin_path)
+			{
+				// ft_free(args);
+				// return (ft_putstr_fd("Command not found\n", 2));
+				ft_free(args);
+				// ft_free(paths);
+				free(bin_path);
+				// ft_err("Command not found\n");
+				return (ft_putstr_fd("Command not found\n", 2));
+			}
 			runcmd(bin_path, args, ft_open_file(argv[argc - 1], OUTFILE), 1);
+			// free(bin_path);
+			// ft_free(args);
 		}
-			// ft_runcmd(argv[i], paths, ft_open_file(argv[argc - 1], OUTFILE), 1);
 	}
 }
 
 int	ft_open_file(char *filename, int mode)
 {
-	int	file_fd;
-
 	if (mode == INFILE)
-	{
-		file_fd = open(filename, O_RDONLY);
-		if (file_fd < 0)
-			ft_err("Input file does not exist\n");
-		return (file_fd);
-	}
+		return (open(filename, O_RDONLY));
 	else
 		return (open(filename, O_WRONLY | O_CREAT, 0775));
 }
@@ -77,12 +86,10 @@ char	**ft_findpath(char **env)
 		{
 			env[i] = env[i] + 5;
 			return(ft_split(env[i], ':'));
-
 		}
 		else
 			i++;
 	}
-	ft_err("Environment path not found\n");
 	return (NULL);
 }
 
@@ -107,20 +114,24 @@ char	**ft_findpath(char **env)
 
 char	*find_bin_path(char *cmd, char **paths)
 {
-	// char	**cd;
 	char	*bin_path;
 	int		i;
 
 	i = 0;
+
 	while (paths[i] != NULL)
 	{
 		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cmd));
 		if (access(bin_path, X_OK | R_OK | F_OK) == 0)
 			return (bin_path);
 		else
+		{
 			i++;
+		}
+		free(bin_path);
+		bin_path = NULL;
 	}
-	ft_err("Command not found\n");
+	// free(bin_path);
 	return (NULL);
 }
 
@@ -133,6 +144,6 @@ void	ft_err(char *err_msg)
 void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd)
 {
 	dup2(dupped_fd, infd);
-	if (execve(bin_path, cd, NULL) == -1)
+	if (execve(bin_path, cd, NULL) == 0)
 		exit(1);
 }
