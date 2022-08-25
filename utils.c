@@ -6,7 +6,7 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 04:07:40 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/25 06:57:39 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 07:06:00 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,9 @@ void	ft_err(char *err_msg)
 void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd)
 {
 	dup2(dupped_fd, infd);
-	if (execve(bin_path, cd, NULL) == 0)
-		exit(1);
+	// if (execve(bin_path, cd, NULL) == 0)
+	// 	exit(1);
+	execve(bin_path, cd, NULL);
+	// printf("");
+	free(bin_path);
 }
