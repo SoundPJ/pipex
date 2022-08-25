@@ -6,21 +6,18 @@
 /*   By: pjerddee <pjerddee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 04:07:40 by pjerddee          #+#    #+#             */
-/*   Updated: 2022/08/25 07:06:00 by pjerddee         ###   ########.fr       */
+/*   Updated: 2022/08/25 18:17:32 by pjerddee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	*find_bin_path(char *cmd, char **paths);
-void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd);
+void	runcmd(char **paths, char **argv, int dupped_fd, int i);
 
-void	ft_pipex(int argc, char **argv, char **paths, int i)
+void	ft_pipex(int ac, char **av, char **paths, int i)
 {
-	int	fd[2];
-	int	pid;
-	char	*bin_path;
-	char	**args;
+	int		fd[2];
+	int		pid;
 
 	if (pipe(fd) != 0)
 		ft_err("Error at pipe\n");
@@ -28,111 +25,17 @@ void	ft_pipex(int argc, char **argv, char **paths, int i)
 	if (pid < 0)
 		ft_err("Error at fork\n");
 	else if (pid == 0)
-	{
-		args = ft_split(argv[i], ' ');
-		bin_path = find_bin_path(args[0], paths);
-		if (bin_path)
-		{
-			runcmd(bin_path, args, fd[1], 1);
-			free(bin_path);
-		}
-		ft_free(args);
-	}
+		runcmd(paths, av, fd[1], i);
 	else
 	{
 		wait(NULL);
 		close(fd[1]);
 		dup2(fd[0], 0);
-		if (++i < argc - 2)
-			ft_pipex(argc, argv, paths, i);
+		if (++i < ac - 2)
+			ft_pipex(ac, av, paths, i);
 		else
-		{
-			args = ft_split(argv[i], ' ');
-			bin_path = find_bin_path(args[0], paths);
-			// free(bin_path);
-			if (!bin_path)
-			{
-				// ft_free(args);
-				// return (ft_putstr_fd("Command not found\n", 2));
-				ft_free(args);
-				// ft_free(paths);
-				free(bin_path);
-				// ft_err("Command not found\n");
-				return (ft_putstr_fd("Command not found\n", 2));
-			}
-			runcmd(bin_path, args, ft_open_file(argv[argc - 1], OUTFILE), 1);
-			// free(bin_path);
-			// ft_free(args);
-		}
+			runcmd(paths, av, open(av[ac - 1], O_WRONLY | O_CREAT, 0775), i);
 	}
-}
-
-int	ft_open_file(char *filename, int mode)
-{
-	if (mode == INFILE)
-		return (open(filename, O_RDONLY));
-	else
-		return (open(filename, O_WRONLY | O_CREAT, 0775));
-}
-
-char	**ft_findpath(char **env)
-{
-	int	i;
-
-	i = 0;
-	while (env[i] != NULL)
-	{
-		if (ft_strnstr(env[i], "PATH=", 5))
-		{
-			env[i] = env[i] + 5;
-			return(ft_split(env[i], ':'));
-		}
-		else
-			i++;
-	}
-	return (NULL);
-}
-
-// void	ft_runcmd(char *cmd, char **paths, int dupped_fd, int infd)
-// {
-// 	char	**cd;
-// 	char	*bin_path;
-// 	int		i;
-
-// 	cd = ft_split(cmd, ' ');
-// 	i = 0;
-// 	while (paths[i] != NULL)
-// 	{
-// 		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cd[0]));
-// 		if (access(bin_path, X_OK | R_OK | F_OK) == 0)
-// 			runcmd(bin_path, cd, dupped_fd, infd);
-// 		else
-// 			i++;
-// 	}
-// 	ft_err("Command not found\n");
-// }
-
-char	*find_bin_path(char *cmd, char **paths)
-{
-	char	*bin_path;
-	int		i;
-
-	i = 0;
-
-	while (paths[i] != NULL)
-	{
-		bin_path = ft_strjoin(paths[i], ft_strjoin("/", cmd));
-		if (access(bin_path, X_OK | R_OK | F_OK) == 0)
-			return (bin_path);
-		else
-		{
-			i++;
-		}
-		free(bin_path);
-		bin_path = NULL;
-	}
-	// free(bin_path);
-	return (NULL);
 }
 
 void	ft_err(char *err_msg)
@@ -141,12 +44,30 @@ void	ft_err(char *err_msg)
 	exit(EXIT_FAILURE);
 }
 
-void	runcmd(char *bin_path, char **cd, int dupped_fd, int infd)
+void	ft_free(char **str)
 {
-	dup2(dupped_fd, infd);
-	// if (execve(bin_path, cd, NULL) == 0)
-	// 	exit(1);
-	execve(bin_path, cd, NULL);
-	// printf("");
+	int	i;
+
+	i = 0;
+	while (str[i])
+		free(str[i++]);
+	free(str);
+}
+
+void	runcmd(char **paths, char **argv, int dupped_fd, int i)
+{
+	char	**args;
+	char	*bin_path;
+
+	args = ft_split(argv[i], ' ');
+	bin_path = find_bin_path(args[0], paths);
+	if (!bin_path)
+	{
+		ft_free(args);
+		free(bin_path);
+		return (ft_putstr_fd("Command not found\n", 2));
+	}
+	dup2(dupped_fd, 1);
+	execve(bin_path, args, NULL);
 	free(bin_path);
 }
